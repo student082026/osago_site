@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявить о страховом случае - ОСАГО-Контроль</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/app.js"></script>
+    <style>
+        /* ========== ОСНОВНЫЕ СТИЛИ ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff9f0; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 1300px; margin: 0 auto; padding: 20px; }
+        
+        /* ========== ШАПКА - ФИКСИРОВАННАЯ (как на странице "О компании") ========== */
+        header { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 10px rgba(255,152,0,0.3); 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000; 
+        }
+        
+        /* ОТСТУП ДЛЯ ФИКСИРОВАННОЙ ШАПКИ */
+        .main-container {
+            margin-top: 160px;
+        }
+        
+        .header-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .logo-row { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #f57c00; }
+        .logo-text { font-size: 24px; font-weight: bold; }
+        .logo-text span { color: #fff9c4; }
+        
+        /* Навигация */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px; }
+        nav ul { list-style: none; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; padding: 0; }
+        nav ul li { position: relative; }
+        nav ul li a { display: block; padding: 8px 15px; color: white; text-decoration: none; font-weight: 500; border-radius: 25px; transition: background 0.2s; }
+        nav ul li a:hover { background: rgba(255,255,255,0.2); }
+        nav ul li ul.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; padding: 10px 0; }
+        nav ul li:hover ul.dropdown-menu { display: block; }
+        nav ul li ul.dropdown-menu li a { color: #333; padding: 10px 20px; white-space: nowrap; }
+        nav ul li ul.dropdown-menu li a:hover { background: #fff0e0; color: #f57c00; }
+        
+        /* Новая строка для кнопок входа/регистрации */
+        .auth-buttons-row {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 12px;
+            margin-top: 0;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-link {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* ========== СТИЛИ ДЛЯ КОНТЕНТА (нетронуты) ========== */
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #ff9800;
+        }
+        .card-header {
+            border-bottom: 2px solid #fff0e0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-header i { color: #ff9800; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { background: #f57c00; }
+        .btn-success {
+            background: #4caf50;
+        }
+        .btn-success:hover {
+            background: #43a047;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #ff9800;
+            color: #ff9800;
+        }
+        .btn-outline:hover {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .upload-area {
+            border: 2px dashed #ff9800;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: #fff9f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #fff3e0;
+        }
+        .file-list {
+            margin-top: 15px;
+        }
+        .file-item {
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .step .step-number {
+            width: 40px;
+            height: 40px;
+            background: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: white;
+        }
+        .step.active .step-number {
+            background: #ff9800;
+        }
+        .step.completed .step-number {
+            background: #4caf50;
+        }
+        .step .step-title {
+            font-size: 14px;
+            color: #666;
+        }
+        .step.active .step-title {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        /* Футер */
+        footer { background: #2c3e50; color: #ecf0f1; padding: 3rem 0 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-section h4 { color: #ff9800; margin-bottom: 15px; }
+        .footer-section a { color: #ecf0f1; text-decoration: none; }
+        .social-links a { color: #ecf0f1; font-size: 24px; margin-right: 15px; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #34495e; }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 12px; }
+            .logo-row { flex-direction: column; gap: 10px; text-align: center; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            nav ul { justify-content: center; }
+            .auth-buttons-row { justify-content: center; }
+            .step .step-title {
+                font-size: 10px;
+            }
+            .main-container {
+                margin-top: 280px;
+            }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ШАПКА (ПОЛНОСТЬЮ ИЗ ПРЕДОСТАВЛЕННОГО КОДА) ========== -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-row">
+                <div class="logo">
+                    <div class="logo-icon">О</div>
+                    <div class="logo-text">ОСАГО-<span>Контроль</span></div>
+                </div>
+                <div></div>
+            </div>
+            <div class="nav-bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-info-circle"></i> О нас <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="about.html">О компании</a></li>
+                                <li><a href="team.html">Наша команда</a></li>
+                                <li><a href="vacancies.html">Вакансии</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-cogs"></i> Услуги <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="services.html">Все услуги</a></li>
+                                <li><a href="service-osago.html">ОСАГО</a></li>
+                                <li><a href="service-kasko.html">КАСКО</a></li>
+                                <li><a href="service-dms.html">ДМС</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-file-contract"></i> Договоры <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="contracts.html">Все договоры</a></li>
+                                <li><a href="add_contract.html">Оформить договор</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-exclamation-triangle"></i> Страховые случаи <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="cases.html">Все случаи</a></li>
+                                <li><a href="add_case.html">Заявить о случае</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-star"></i> Отзывы <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="reviews.html">Все отзывы</a></li>
+                                <li><a href="add_review.html">Оставить отзыв</a></li>
+                            </ul>
+                        </li>
+                        <li class="auth-only" style="display:none"><a href="analytics.html"><i class="fas fa-chart-line"></i> Аналитика</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-newspaper"></i> Новости <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="news.html">Все новости</a></li>
+                                <li><a href="promotions.html">Акции</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-question-circle"></i> Помощь <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="faq.html">Частые вопросы</a></li>
+                                <li><a href="contacts.html">Поддержка</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contacts.html"><i class="fas fa-map-marker-alt"></i> Контакты</a></li>
+                        <li class="guest-only" style="display:none"><a href="login.html"><i class="fas fa-sign-in-alt"></i> Вход</a></li>
+                        <li class="guest-only" style="display:none"><a href="register.html"><i class="fas fa-user-plus"></i> Регистрация</a></li>
+                        <li class="admin-only" style="display:none"><a href="admin.html"><i class="fas fa-user-shield"></i> <span style="color:#ffcc80;">Админ-панель</span></a></li>
+                        <li class="dropdown auth-only" id="userMenuLi" style="display:none">
+                            <a href="#"><i class="fas fa-user-circle"></i> <span id="userName">Профиль</span> <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html">Панель управления</a></li>
+                                <li><a href="profile.html">Мой профиль</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="logout.html">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="auth-buttons-row" id="guestAuthRow">
+                <a href="login.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                <a href="register.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-user-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ========== ОСНОВНОЙ КОНТЕНТ (НЕТРОНУТ) ========== -->
+<div class="main-container">
+    <div style="width: 90%; max-width: 1300px; margin-left: auto; margin-right: auto; padding: 20px;">
+        <div class="form-container">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-exclamation-triangle"></i> Заявление о страховом случае
+                </div>
+                
+                <div class="steps">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Информация о ДТП</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Документы</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Подтверждение</div>
+                    </div>
+                </div>
+                
+                <div id="errorMsg" class="alert alert-error" style="display:none"></div>
+                <div id="successMsg" class="alert alert-success" style="display:none"></div>
+                
+                <!-- Шаг 1 -->
+                <div id="step1Content">
+                    <form id="caseForm">
+                        <div class="form-group">
+                            <label><i class="fas fa-file-contract"></i> Договор ОСАГО:</label>
+                            <select id="contract_id" required>
+                                <option value="">Выберите договор</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Дата страхового случая:</label>
+                            <input type="date" id="case_date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Место происшествия:</label>
+                            <input type="text" id="place" placeholder="Адрес, где произошло ДТП">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-comment"></i> Описание происшествия:</label>
+                            <textarea id="description" rows="5" required placeholder="Подробно опишите что произошло..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-ruble-sign"></i> Сумма ущерба (руб.):</label>
+                            <input type="number" step="0.01" id="damage_amount" required placeholder="Пример: 50000">
+                        </div>
+                        
+                        <button type="button" class="btn btn-success" onclick="nextStep()">Далее →</button>
+                        <a href="cases.html" class="btn btn-outline">Отмена</a>
+                    </form>
+                </div>
+                
+                <!-- Шаг 2 -->
+                <div id="step2Content" style="display:none">
+                    <div class="form-group">
+                        <label><i class="fas fa-file-pdf"></i> Приложите документы:</label>
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #ff9800;"></i>
+                            <p>Нажмите или перетащите файлы сюда</p>
+                            <p style="font-size: 12px; color: #999;">Поддерживаются: PDF, JPG, PNG (до 5 МБ)</p>
+                            <input type="file" id="fileInput" multiple style="display:none">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-gavel"></i> Есть ли пострадавшие?</label>
+                        <select id="victims">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да, есть пострадавшие</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-police"></i> Вызвана ли ГИБДД?</label>
+                        <select id="police_called">
+                            <option value="yes">Да, вызвана</option>
+                            <option value="no">Нет, оформлен европротокол</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" class="btn" onclick="prevStep()">← Назад</button>
+                    <button type="button" class="btn btn-success" onclick="submitCase()">Отправить заявление</button>
+                </div>
+                
+                <!-- Шаг 3 -->
+                <div id="step3Content" style="display:none; text-align:center">
+                    <i class="fas fa-check-circle" style="font-size: 80px; color: #4caf50; margin-bottom: 20px;"></i>
+                    <h2>Заявление отправлено!</h2>
+                    <p>Номер вашего обращения: <strong id="caseNumber"></strong></p>
+                    <p>Статус заявления: <span style="color:#ff9800; font-weight:bold">На рассмотрении</span></p>
+                    <p>Мы свяжемся с вами в течение 24 часов.</p>
+                    <a href="cases.html" class="btn btn-success">Перейти к моим случаям</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><i class="fas fa-info-circle"></i> Что делать при ДТП?</div>
+                <ul style="margin-left: 20px;">
+                    <li>Остановитесь и включите аварийную сигнализацию</li>
+                    <li>Выставьте знак аварийной остановки</li>
+                    <li>Сфотографируйте место происшествия с разных ракурсов</li>
+                    <li>Запишите данные очевидцев</li>
+                    <li>Вызовите ГИБДД (если есть пострадавшие или спор о виновности)</li>
+                    <li>Заполните извещение о ДТП</li>
+                    <li>Сообщите в страховую компанию в течение 5 дней</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ФУТЕР (НЕТРОНУТ) ========== -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h4>О компании</h4><p>Профессиональный сервис для учета договоров ОСАГО. Работаем с 2010 года.</p></div>
+            <div class="footer-section"><h4>Навигация</h4><p><a href="about.html">О нас</a> | <a href="services.html">Услуги</a> | <a href="news.html">Новости</a></p><p><a href="faq.html">Вопросы</a> | <a href="contacts.html">Контакты</a></p></div>
+            <div class="footer-section"><h4>Контакты</h4><p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p><p><i class="fas fa-envelope"></i> info@osago-control.ru</p><p><i class="fas fa-map-marker-alt"></i> Москва, Красная площадь, 1</p></div>
+            <div class="footer-section"><h4>Мы в соцсетях</h4><div class="social-links"><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a><a href="https://t.me" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></div></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 ОСАГО-Контроль. Все права защищены.</p></div>
+    </div>
+</footer>
+
+<script>
+    var currentStep = 1;
+    var uploadedFiles = [];
+    
+    function getCurrentUser() {
+        try {
+            return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+    function getContracts() {
+        try {
+            return JSON.parse(localStorage.getItem('contracts') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+    
+    function loadContracts() {
+        var user = getCurrentUser();
+        if (!user) return;
+        var contracts = getContracts();
+        var userContracts = contracts.filter(c => c.created_by === user.id);
+        var select = document.getElementById('contract_id');
+        select.innerHTML = '<option value="">Выберите договор</option>';
+        for (var i = 0; i < userContracts.length; i++) {
+            select.innerHTML += '<option value="' + userContracts[i].id + '">' + userContracts[i].contract_number + ' - ' + userContracts[i].car_brand + ' ' + userContracts[i].car_model + ' (' + userContracts[i].car_number + ')</option>';
+        }
+    }
+    
+    function nextStep() {
+        var contract_id = document.getElementById('contract_id').value;
+        var case_date = document.getElementById('case_date').value;
+        var description = document.getElementById('description').value;
+        var damage_amount = document.getElementById('damage_amount').value;
+        
+        if (!contract_id) { showError('Выберите договор'); return; }
+        if (!case_date) { showError('Укажите дату'); return; }
+        if (!description.trim()) { showError('Опишите происшествие'); return; }
+        if (!damage_amount || damage_amount <= 0) { showError('Укажите сумму ущерба'); return; }
+        
+        document.getElementById('step1Content').style.display = 'none';
+        document.getElementById('step2Content').style.display = 'block';
+        document.getElementById('step3Content').style.display = 'none';
+        
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('active');
+        currentStep = 2;
+    }
+    
+    function prevStep() {
+        document.getElementById('step1Content').style.display = 'block';
+        document.getElementById('step2Content').style.display = 'none';
+        document.getElementById('step3Content').style.display = 'none';
+        
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step1').classList.remove('completed');
+        document.getElementById('step1').classList.add('active');
+        currentStep = 1;
+    }
+    
+    function submitCase() {
+        var user = getCurrentUser();
+        if (!user) { window.location.href = 'login.html'; return; }
+        
+        var contract_id = parseInt(document.getElementById('contract_id').value);
+        var case_date = document.getElementById('case_date').value;
+        var place = document.getElementById('place').value;
+        var description = document.getElementById('description').value;
+        var damage_amount = parseFloat(document.getElementById('damage_amount').value);
+        
+        var contracts = getContracts();
+        var selectedContract = contracts.find(c => c.id === contract_id);
+        
+        var cases = JSON.parse(localStorage.getItem('insurance_cases') || '[]');
+        var nextId = parseInt(localStorage.getItem('nextCaseId') || '1');
+        
+        var newCase = {
+            id: nextId,
+            contract_id: contract_id,
+            contract_number: selectedContract.contract_number,
+            client_name: selectedContract.client_name,
+            car_brand: selectedContract.car_brand,
+            car_model: selectedContract.car_model,
+            car_number: selectedContract.car_number,
+            case_date: case_date,
+            place: place,
+            description: description,
+            damage_amount: damage_amount,
+            payment_amount: null,
+            status: 'filed',
+            created_at: new Date().toISOString()
+        };
+        
+        cases.push(newCase);
+        localStorage.setItem('insurance_cases', JSON.stringify(cases));
+        localStorage.setItem('nextCaseId', nextId + 1);
+        
+        document.getElementById('step1Content').style.display = 'none';
+        document.getElementById('step2Content').style.display = 'none';
+        document.getElementById('step3Content').style.display = 'block';
+        
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step3').classList.add('active');
+        
+        document.getElementById('caseNumber').innerText = nextId;
+        
+        // Очистка формы
+        document.getElementById('caseForm').reset();
+    }
+    
+    function showError(msg) {
+        var errorDiv = document.getElementById('errorMsg');
+        errorDiv.innerHTML = msg;
+        errorDiv.style.display = 'block';
+        setTimeout(function() { errorDiv.style.display = 'none'; }, 3000);
+    }
+    
+    // Загрузка файлов
+    var uploadArea = document.getElementById('uploadArea');
+    var fileInput = document.getElementById('fileInput');
+    
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fff3e0';
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fff9f0';
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fff9f0';
+        var files = e.dataTransfer.files;
+        handleFiles(files);
+    });
+    
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+        for (var i = 0; i < files.length; i++) {
+            uploadedFiles.push(files[i].name);
+        }
+        updateFileList();
+    }
+    
+    function updateFileList() {
+        var fileListDiv = document.getElementById('fileList');
+        fileListDiv.innerHTML = '';
+        for (var i = 0; i < uploadedFiles.length; i++) {
+            fileListDiv.innerHTML += '<div class="file-item"><span><i class="fas fa-file"></i> ' + uploadedFiles[i] + '</span><i class="fas fa-trash" style="color:#f44336; cursor:pointer" onclick="removeFile(' + i + ')"></i></div>';
+        }
+    }
+    
+    function removeFile(index) {
+        uploadedFiles.splice(index, 1);
+        updateFileList();
+    }
+    
+    function updateMenu() {
+        var user = getCurrentUser();
+        
+        document.querySelectorAll('.guest-only').forEach(function(el) {
+            if (el.classList.contains('auth-link')) {
+                el.style.display = user ? 'none' : 'inline-flex';
+            } else {
+                el.style.display = user ? 'none' : 'block';
+            }
+        });
+        document.querySelectorAll('.auth-only').forEach(function(el) {
+            el.style.display = user ? 'block' : 'none';
+        });
+        document.querySelectorAll('.admin-only').forEach(function(el) {
+            el.style.display = (user && user.role === 'admin') ? 'block' : 'none';
+        });
+        
+        var nameSpan = document.getElementById('userName');
+        if (nameSpan && user) nameSpan.innerText = user.username;
+        
+        var guestRow = document.getElementById('guestAuthRow');
+        if (guestRow) {
+            guestRow.style.display = user ? 'none' : 'flex';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initData === 'function') initData();
+        if (typeof checkAuth === 'function') checkAuth();
+        updateMenu();
+        loadContracts();
+        
+        // Установка сегодняшней даты по умолчанию
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('case_date').value = today;
+    });
+</script>
+</body>
+</html>

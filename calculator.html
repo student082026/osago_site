@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор ОСАГО - ОСАГО-Контроль</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff9f0; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 1300px; margin: 0 auto; padding: 20px; }
+        
+        /* ШАПКА - ФИКСИРОВАННАЯ */
+        header { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 10px rgba(255,152,0,0.3); 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000; 
+        }
+        
+        .main-content { margin-top: 240px; }
+        
+        .header-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .logo-row { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #f57c00; }
+        .logo-text { font-size: 24px; font-weight: bold; }
+        .logo-text span { color: #fff9c4; }
+        
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px; }
+        nav ul { list-style: none; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; padding: 0; }
+        nav ul li { position: relative; }
+        nav ul li a { display: block; padding: 8px 15px; color: white; text-decoration: none; font-weight: 500; border-radius: 25px; transition: background 0.2s; }
+        nav ul li a:hover { background: rgba(255,255,255,0.2); }
+        nav ul li ul.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; padding: 10px 0; }
+        nav ul li:hover ul.dropdown-menu { display: block; }
+        nav ul li ul.dropdown-menu li a { color: #333; padding: 10px 20px; white-space: nowrap; }
+        nav ul li ul.dropdown-menu li a:hover { background: #fff0e0; color: #f57c00; }
+        
+        .auth-buttons-row {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 12px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-link {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-link:hover { background: rgba(255,255,255,0.3); }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #ff9800;
+        }
+        .card-header {
+            border-bottom: 2px solid #fff0e0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-header i { color: #ff9800; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { background: #f57c00; }
+        .btn-success { background: #4caf50; }
+        .btn-success:hover { background: #43a047; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #ff9800; }
+        
+        .result-box {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .result-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff9800;
+        }
+        
+        footer { background: #2c3e50; color: #ecf0f1; padding: 3rem 0 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-section h4 { color: #ff9800; margin-bottom: 15px; }
+        .footer-section a { color: #ecf0f1; text-decoration: none; }
+        .social-links a { color: #ecf0f1; font-size: 24px; margin-right: 15px; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #34495e; }
+        
+        @media (max-width: 768px) {
+            .main-content { margin-top: 280px; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            nav ul { justify-content: center; }
+            .auth-buttons-row { justify-content: center; }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-row">
+                <div class="logo">
+                    <div class="logo-icon">О</div>
+                    <div class="logo-text">ОСАГО-<span>Контроль</span></div>
+                </div>
+                <div></div>
+            </div>
+            <div class="nav-bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-info-circle"></i> О нас <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="about.html">О компании</a></li>
+                                <li><a href="team.html">Наша команда</a></li>
+                                <li><a href="vacancies.html">Вакансии</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-cogs"></i> Услуги <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="services.html">Все услуги</a></li>
+                                <li><a href="service-osago.html">ОСАГО</a></li>
+                                <li><a href="service-kasko.html">КАСКО</a></li>
+                                <li><a href="service-dms.html">ДМС</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contacts.html"><i class="fas fa-map-marker-alt"></i> Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="auth-buttons-row" id="guestAuthRow">
+                <a href="login.html" class="auth-link"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                <a href="register.html" class="auth-link"><i class="fas fa-user-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calculator"></i> Калькулятор ОСАГО
+            </div>
+            <p>Рассчитайте примерную стоимость полиса ОСАГО</p>
+            
+            <form id="calcForm">
+                <div class="form-group">
+                    <label><i class="fas fa-city"></i> Регион (г. Москва):</label>
+                    <select id="region">
+                        <option value="1.8">Москва (x1.8)</option>
+                        <option value="1.6">Санкт-Петербург (x1.6)</option>
+                        <option value="1.4">Екатеринбург (x1.4)</option>
+                        <option value="1.2">Казань (x1.2)</option>
+                        <option value="1.0">Остальные регионы (x1.0)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-horse-head"></i> Мощность двигателя (л.с.):</label>
+                    <select id="power">
+                        <option value="0.8">до 50 л.с. (x0.8)</option>
+                        <option value="1.0" selected>50-70 л.с. (x1.0)</option>
+                        <option value="1.1">70-100 л.с. (x1.1)</option>
+                        <option value="1.3">100-120 л.с. (x1.3)</option>
+                        <option value="1.5">120-150 л.с. (x1.5)</option>
+                        <option value="1.6">150-200 л.с. (x1.6)</option>
+                        <option value="1.8">более 200 л.с. (x1.8)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Стаж вождения (лет):</label>
+                    <select id="experience">
+                        <option value="2.0">до 1 года (x2.0)</option>
+                        <option value="1.5">1-3 года (x1.5)</option>
+                        <option value="1.2" selected>3-5 лет (x1.2)</option>
+                        <option value="1.0">5-10 лет (x1.0)</option>
+                        <option value="0.9">более 10 лет (x0.9)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-chart-line"></i> КБМ (скидка за безаварийность):</label>
+                    <select id="kbm">
+                        <option value="2.45">0.5 (аварийный, 2.45)</option>
+                        <option value="1.55">1 (1.55)</option>
+                        <option value="1.0" selected>3 (1.0)</option>
+                        <option value="0.8">5 лет (0.8)</option>
+                        <option value="0.6">7 лет (0.6)</option>
+                        <option value="0.5">10+ лет (0.5)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Срок страхования (месяцев):</label>
+                    <select id="period">
+                        <option value="1.0" selected>12 месяцев (x1.0)</option>
+                        <option value="0.6">6 месяцев (x0.6)</option>
+                        <option value="0.5">5 месяцев (x0.5)</option>
+                        <option value="0.4">4 месяца (x0.4)</option>
+                        <option value="0.3">3 месяца (x0.3)</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="calculatePrice()">Рассчитать стоимость</button>
+            </form>
+            
+            <div id="resultBox" class="result-box" style="display: none;">
+                <h3>Примерная стоимость полиса</h3>
+                <div class="result-price" id="resultPrice">0 ₽</div>
+                <p><small>* Итоговая цена может отличаться в зависимости от страховой компании</small></p>
+                <a href="add_contract.html" class="btn">Оформить онлайн</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header"><i class="fas fa-info-circle"></i> Как рассчитывается ОСАГО?</div>
+            <p>Стоимость полиса ОСАГО = Базовая ставка × Региональный коэффициент × Коэффициент мощности × Коэффициент стажа × КБМ × Коэффициент срока страхования</p>
+            <p><strong>Базовая ставка для легкового автомобиля: 3 000 ₽</strong></p>
+            <p>Чем больше стаж и безаварийность, тем ниже цена полиса!</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h4>О компании</h4><p>Профессиональный сервис для учета договоров ОСАГО. Работаем с 2010 года.</p></div>
+            <div class="footer-section"><h4>Навигация</h4><p><a href="about.html">О нас</a> | <a href="services.html">Услуги</a> | <a href="news.html">Новости</a></p><p><a href="faq.html">Вопросы</a> | <a href="contacts.html">Контакты</a></p></div>
+            <div class="footer-section"><h4>Контакты</h4><p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p><p><i class="fas fa-envelope"></i> info@osago-control.ru</p></div>
+            <div class="footer-section"><h4>Мы в соцсетях</h4><div class="social-links"><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a><a href="https://t.me" target="_blank"><i class="fab fa-telegram"></i></a></div></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 ОСАГО-Контроль. Все права защищены.</p></div>
+    </div>
+</footer>
+
+<script>
+    function calculatePrice() {
+        var baseRate = 3000;
+        var region = parseFloat(document.getElementById('region').value);
+        var power = parseFloat(document.getElementById('power').value);
+        var experience = parseFloat(document.getElementById('experience').value);
+        var kbm = parseFloat(document.getElementById('kbm').value);
+        var period = parseFloat(document.getElementById('period').value);
+        
+        var price = baseRate * region * power * experience * kbm * period;
+        price = Math.round(price / 100) * 100;
+        
+        document.getElementById('resultPrice').innerHTML = price.toLocaleString() + ' ₽';
+        document.getElementById('resultBox').style.display = 'block';
+    }
+    
+    function updateMenu() {
+        var user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch(e) {}
+        
+        var guestRow = document.getElementById('guestAuthRow');
+        if (guestRow) {
+            guestRow.style.display = user ? 'none' : 'flex';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', updateMenu);
+</script>
+</body>
+</html>

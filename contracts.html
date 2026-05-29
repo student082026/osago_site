@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои договоры - ОСАГО-Контроль</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/app.js"></script>
+    <style>
+        /* ========== ОСНОВНЫЕ СТИЛИ ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff9f0; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 1300px; margin: 0 auto; padding: 20px; }
+        
+        /* ========== ШАПКА - ФИКСИРОВАННАЯ (как на странице "О компании") ========== */
+        header { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 10px rgba(255,152,0,0.3); 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000; 
+        }
+        
+        /* ОТСТУП ДЛЯ ФИКСИРОВАННОЙ ШАПКИ */
+        .main-container {
+            margin-top: 160px;
+        }
+        
+        .header-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .logo-row { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #f57c00; }
+        .logo-text { font-size: 24px; font-weight: bold; }
+        .logo-text span { color: #fff9c4; }
+        
+        /* Навигация */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px; }
+        nav ul { list-style: none; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; padding: 0; }
+        nav ul li { position: relative; }
+        nav ul li a { display: block; padding: 8px 15px; color: white; text-decoration: none; font-weight: 500; border-radius: 25px; transition: background 0.2s; }
+        nav ul li a:hover { background: rgba(255,255,255,0.2); }
+        nav ul li ul.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; padding: 10px 0; }
+        nav ul li:hover ul.dropdown-menu { display: block; }
+        nav ul li ul.dropdown-menu li a { color: #333; padding: 10px 20px; white-space: nowrap; }
+        nav ul li ul.dropdown-menu li a:hover { background: #fff0e0; color: #f57c00; }
+        
+        /* Новая строка для кнопок входа/регистрации */
+        .auth-buttons-row {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 12px;
+            margin-top: 0;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-link {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* ========== СТИЛИ ДЛЯ КОНТЕНТА (нетронуты) ========== */
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #ff9800;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { background: #f57c00; }
+        .btn-success {
+            background: #4caf50;
+        }
+        .btn-success:hover {
+            background: #43a047;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #fff3e0;
+            color: #f57c00;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #fff8f0;
+        }
+        
+        /* Футер */
+        footer { background: #2c3e50; color: #ecf0f1; padding: 3rem 0 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-section h4 { color: #ff9800; margin-bottom: 15px; }
+        .footer-section a { color: #ecf0f1; text-decoration: none; }
+        .social-links a { color: #ecf0f1; font-size: 24px; margin-right: 15px; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #34495e; }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 12px; }
+            .logo-row { flex-direction: column; gap: 10px; text-align: center; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            nav ul { justify-content: center; }
+            .auth-buttons-row { justify-content: center; }
+            .table-container { overflow-x: auto; }
+            th, td { font-size: 12px; padding: 8px; }
+            .main-container {
+                margin-top: 280px;
+            }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ШАПКА (ПОЛНОСТЬЮ ИЗ ПРЕДОСТАВЛЕННОГО КОДА) ========== -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-row">
+                <div class="logo">
+                    <div class="logo-icon">О</div>
+                    <div class="logo-text">ОСАГО-<span>Контроль</span></div>
+                </div>
+                <div></div>
+            </div>
+            <div class="nav-bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-info-circle"></i> О нас <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="about.html">О компании</a></li>
+                                <li><a href="team.html">Наша команда</a></li>
+                                <li><a href="vacancies.html">Вакансии</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-cogs"></i> Услуги <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="services.html">Все услуги</a></li>
+                                <li><a href="service-osago.html">ОСАГО</a></li>
+                                <li><a href="service-kasko.html">КАСКО</a></li>
+                                <li><a href="service-dms.html">ДМС</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-file-contract"></i> Договоры <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="contracts.html">Все договоры</a></li>
+                                <li><a href="add_contract.html">Оформить договор</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-exclamation-triangle"></i> Страховые случаи <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="cases.html">Все случаи</a></li>
+                                <li><a href="add_case.html">Заявить о случае</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-star"></i> Отзывы <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="reviews.html">Все отзывы</a></li>
+                                <li><a href="add_review.html">Оставить отзыв</a></li>
+                            </ul>
+                        </li>
+                        <li class="auth-only" style="display:none"><a href="analytics.html"><i class="fas fa-chart-line"></i> Аналитика</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-newspaper"></i> Новости <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="news.html">Все новости</a></li>
+                                <li><a href="promotions.html">Акции</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-question-circle"></i> Помощь <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="faq.html">Частые вопросы</a></li>
+                                <li><a href="contacts.html">Поддержка</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contacts.html"><i class="fas fa-map-marker-alt"></i> Контакты</a></li>
+                        <li class="guest-only" style="display:none"><a href="login.html"><i class="fas fa-sign-in-alt"></i> Вход</a></li>
+                        <li class="guest-only" style="display:none"><a href="register.html"><i class="fas fa-user-plus"></i> Регистрация</a></li>
+                        <li class="admin-only" style="display:none"><a href="admin.html"><i class="fas fa-user-shield"></i> <span style="color:#ffcc80;">Админ-панель</span></a></li>
+                        <li class="dropdown auth-only" id="userMenuLi" style="display:none">
+                            <a href="#"><i class="fas fa-user-circle"></i> <span id="userName">Профиль</span> <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html">Панель управления</a></li>
+                                <li><a href="profile.html">Мой профиль</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="logout.html">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="auth-buttons-row" id="guestAuthRow">
+                <a href="login.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                <a href="register.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-user-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ========== ОСНОВНОЙ КОНТЕНТ (НЕТРОНУТ) ========== -->
+<div class="main-container">
+    <div style="width: 90%; max-width: 1300px; margin-left: auto; margin-right: auto; padding: 20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+            <h2><i class="fas fa-file-contract"></i> Мои договоры</h2>
+            <a href="add_contract.html" class="btn btn-success">+ Новый договор</a>
+        </div>
+        <div class="card">
+            <div class="table-container" id="contractsList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ФУТЕР (НЕТРОНУТ) ========== -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h4><i class="fas fa-building"></i> О компании</h4><p>Профессиональный сервис для учета договоров ОСАГО. Работаем с 2010 года.</p></div>
+            <div class="footer-section"><h4><i class="fas fa-sitemap"></i> Навигация</h4><p><a href="about.html">О нас</a> | <a href="services.html">Услуги</a> | <a href="news.html">Новости</a></p><p><a href="faq.html">Вопросы</a> | <a href="contacts.html">Контакты</a></p></div>
+            <div class="footer-section"><h4><i class="fas fa-address-card"></i> Контакты</h4><p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p><p><i class="fas fa-envelope"></i> info@osago-control.ru</p><p><i class="fas fa-map-marker-alt"></i> Москва, Красная площадь, 1</p></div>
+            <div class="footer-section"><h4><i class="fas fa-share-alt"></i> Мы в соцсетях</h4><div class="social-links"><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a><a href="https://t.me" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></div></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 ОСАГО-Контроль. Все права защищены.</p></div>
+    </div>
+</footer>
+
+<script>
+    function getCurrentUser() {
+        try {
+            return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+    function getContracts() {
+        try {
+            return JSON.parse(localStorage.getItem('contracts') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+    
+    function loadContracts() {
+        const user = getCurrentUser();
+        if(!user) return;
+        const contracts = getContracts().filter(c => c.created_by === user.id);
+        const statusText = { active: 'Активен', expired: 'Истек', terminated: 'Расторгнут' };
+        const statusColor = { active: '#27ae60', expired: '#c0392b', terminated: '#f39c12' };
+        
+        if (contracts.length === 0) {
+            document.getElementById('contractsList').innerHTML = '<p style="text-align:center;padding:40px">У вас пока нет договоров. <a href="add_contract.html">Оформить первый договор</a></p>';
+            return;
+        }
+        
+        let tableHtml = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>№ договора</th>
+                        <th>Клиент</th>
+                        <th>Автомобиль</th>
+                        <th>Госномер</th>
+                        <th>Статус</th>
+                        <th>Дата окончания</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        for (let i = 0; i < contracts.length; i++) {
+            const c = contracts[i];
+            tableHtml += `
+                <tr>
+                    <td>${c.contract_number}</td>
+                    <td>${c.client_name}</td>
+                    <td>${c.car_brand} ${c.car_model}</td>
+                    <td>${c.car_number}</td>
+                    <td style="color:${statusColor[c.status]}">${statusText[c.status]}</td>
+                    <td>${c.end_date}</td>
+                    <td>${c.premium.toLocaleString()} ₽</td>
+                </tr>
+            `;
+        }
+        
+        tableHtml += `</tbody></table>`;
+        document.getElementById('contractsList').innerHTML = tableHtml;
+    }
+    
+    function updateMenu() {
+        var user = getCurrentUser();
+        
+        document.querySelectorAll('.guest-only').forEach(function(el) {
+            if (el.classList.contains('auth-link')) {
+                el.style.display = user ? 'none' : 'inline-flex';
+            } else {
+                el.style.display = user ? 'none' : 'block';
+            }
+        });
+        document.querySelectorAll('.auth-only').forEach(function(el) {
+            el.style.display = user ? 'block' : 'none';
+        });
+        document.querySelectorAll('.admin-only').forEach(function(el) {
+            el.style.display = (user && user.role === 'admin') ? 'block' : 'none';
+        });
+        
+        var nameSpan = document.getElementById('userName');
+        if (nameSpan && user) nameSpan.innerText = user.username;
+        
+        var guestRow = document.getElementById('guestAuthRow');
+        if (guestRow) {
+            guestRow.style.display = user ? 'none' : 'flex';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => { 
+        if (typeof initData === 'function') initData();
+        if (typeof checkAuth === 'function') checkAuth();
+        updateMenu();
+        loadContracts();
+    });
+</script>
+</body>
+</html>

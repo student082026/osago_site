@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все отзывы - ОСАГО-Контроль</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ========== ОСНОВНЫЕ СТИЛИ ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff9f0; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 1300px; margin: 0 auto; padding: 20px; }
+        
+        /* ========== ШАПКА - ФИКСИРОВАННАЯ (как на странице "О компании") ========== */
+        header { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 10px rgba(255,152,0,0.3); 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000; 
+        }
+        
+        /* ОТСТУП ДЛЯ ФИКСИРОВАННОЙ ШАПКИ */
+        .main-container {
+            margin-top: 160px;
+        }
+        
+        .header-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .logo-row { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #f57c00; }
+        .logo-text { font-size: 24px; font-weight: bold; }
+        .logo-text span { color: #fff9c4; }
+        
+        /* Навигация */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px; }
+        nav ul { list-style: none; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; padding: 0; }
+        nav ul li { position: relative; }
+        nav ul li a { display: block; padding: 8px 15px; color: white; text-decoration: none; font-weight: 500; border-radius: 25px; transition: background 0.2s; }
+        nav ul li a:hover { background: rgba(255,255,255,0.2); }
+        nav ul li ul.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; padding: 10px 0; }
+        nav ul li:hover ul.dropdown-menu { display: block; }
+        nav ul li ul.dropdown-menu li a { color: #333; padding: 10px 20px; white-space: nowrap; }
+        nav ul li ul.dropdown-menu li a:hover { background: #fff0e0; color: #f57c00; }
+        
+        /* Новая строка для кнопок входа/регистрации */
+        .auth-buttons-row {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 12px;
+            margin-top: 0;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-link {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* ========== СТИЛИ ДЛЯ КОНТЕНТА (нетронуты) ========== */
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #ff9800;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { background: #f57c00; }
+        .btn-success {
+            background: #4caf50;
+        }
+        .btn-success:hover {
+            background: #43a047;
+        }
+        
+        .review-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 4px solid #ff9800;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .review-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .review-user i {
+            font-size: 48px;
+            color: #ff9800;
+        }
+        .review-user-info h4 {
+            font-size: 18px;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        .review-user-info .review-date {
+            font-size: 12px;
+            color: #999;
+        }
+        .review-rating {
+            font-size: 22px;
+            letter-spacing: 3px;
+            color: #ffc107;
+        }
+        .review-comment {
+            color: #555;
+            line-height: 1.6;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+        .reviews-controls {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-star {
+            padding: 8px 18px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-star i {
+            color: #ffc107;
+        }
+        .filter-star:hover {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+        .filter-star.active {
+            background: #ff9800;
+            border-color: #ff9800;
+            color: white;
+        }
+        .filter-star.active i {
+            color: white;
+        }
+        .sort-select {
+            padding: 8px 15px;
+            border: 2px solid #ffe0b2;
+            border-radius: 30px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .stats-bar {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .stats-bar .avg-rating {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .stats-bar .avg-rating .big-rating {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff9800;
+        }
+        .stats-bar .avg-rating .stars {
+            font-size: 24px;
+            color: #ffc107;
+        }
+        .stats-bar .total-reviews {
+            font-size: 16px;
+            color: #666;
+        }
+        .rating-distribution {
+            flex: 1;
+            max-width: 300px;
+        }
+        .distr-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+        .distr-stars {
+            width: 60px;
+            color: #ffc107;
+        }
+        .distr-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .distr-fill {
+            height: 100%;
+            background: #ff9800;
+            border-radius: 4px;
+        }
+        .distr-count {
+            width: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+        .write-review-btn {
+            padding: 12px 25px;
+        }
+        .empty-reviews {
+            text-align: center;
+            padding: 60px;
+            background: #fff9f0;
+            border-radius: 15px;
+        }
+        
+        /* Футер */
+        footer { background: #2c3e50; color: #ecf0f1; padding: 3rem 0 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-section h4 { color: #ff9800; margin-bottom: 15px; }
+        .footer-section a { color: #ecf0f1; text-decoration: none; }
+        .social-links a { color: #ecf0f1; font-size: 24px; margin-right: 15px; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #34495e; }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 12px; }
+            .logo-row { flex-direction: column; gap: 10px; text-align: center; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            nav ul { justify-content: center; }
+            .auth-buttons-row { justify-content: center; }
+            .stats-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .rating-distribution {
+                max-width: 100%;
+            }
+            .reviews-controls {
+                flex-direction: column;
+            }
+            .review-card { padding: 15px; }
+            .review-user i { font-size: 36px; }
+            .review-rating { font-size: 18px; }
+            .main-container {
+                margin-top: 280px;
+            }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ШАПКА (ПОЛНОСТЬЮ ПЕРЕНЕСЕНА ИЗ СТРАНИЦЫ "О КОМПАНИИ") ========== -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <!-- Логотип -->
+            <div class="logo-row">
+                <div class="logo">
+                    <div class="logo-icon">О</div>
+                    <div class="logo-text">ОСАГО-<span>Контроль</span></div>
+                </div>
+                <div></div>
+            </div>
+            
+            <!-- Основное меню -->
+            <div class="nav-bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-info-circle"></i> О нас <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="about.html">О компании</a></li>
+                                <li><a href="team.html">Наша команда</a></li>
+                                <li><a href="vacancies.html">Вакансии</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-cogs"></i> Услуги <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="services.html">Все услуги</a></li>
+                                <li><a href="service-osago.html">ОСАГО</a></li>
+                                <li><a href="service-kasko.html">КАСКО</a></li>
+                                <li><a href="service-dms.html">ДМС</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-file-contract"></i> Договоры <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="contracts.html">Все договоры</a></li>
+                                <li><a href="add_contract.html">Оформить договор</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-exclamation-triangle"></i> Страховые случаи <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="cases.html">Все случаи</a></li>
+                                <li><a href="add_case.html">Заявить о случае</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-star"></i> Отзывы <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="reviews.html">Все отзывы</a></li>
+                                <li><a href="add_review.html">Оставить отзыв</a></li>
+                            </ul>
+                        </li>
+                        <li class="auth-only" style="display:none"><a href="analytics.html"><i class="fas fa-chart-line"></i> Аналитика</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-newspaper"></i> Новости <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="news.html">Все новости</a></li>
+                                <li><a href="promotions.html">Акции</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-question-circle"></i> Помощь <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="faq.html">Частые вопросы</a></li>
+                                <li><a href="contacts.html">Поддержка</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contacts.html"><i class="fas fa-map-marker-alt"></i> Контакты</a></li>
+                        <li class="admin-only" style="display:none"><a href="admin.html"><i class="fas fa-user-shield"></i> <span style="color:#ffcc80;">Админ-панель</span></a></li>
+                        <li class="dropdown auth-only" id="userMenuLi" style="display:none">
+                            <a href="#"><i class="fas fa-user-circle"></i> <span id="userName">Профиль</span> <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html">Панель управления</a></li>
+                                <li><a href="profile.html">Мой профиль</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="logout.html">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Новая строка: кнопки "Вход" и "Регистрация" -->
+            <div class="auth-buttons-row" id="guestAuthRow">
+                <a href="login.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                <a href="register.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-user-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ========== ОСНОВНОЙ КОНТЕНТ (НЕТРОНУТ) ========== -->
+<div class="main-container">
+    <div style="width: 90%; max-width: 1300px; margin-left: auto; margin-right: auto; padding: 20px;">
+        <div class="card" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2); text-align:center">
+            <h1 style="font-size: 36px">Что говорят <span style="color:#ff9800">наши клиенты</span></h1>
+            <p>Честные отзывы о нашей работе</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="avg-rating">
+                <div class="big-rating" id="avgRating">0</div>
+                <div>
+                    <div class="stars" id="avgStars">☆☆☆☆☆</div>
+                    <div class="total-reviews" id="totalReviews">0 отзывов</div>
+                </div>
+            </div>
+            <div class="rating-distribution" id="ratingDistribution"></div>
+            <a href="add_review.html" class="btn btn-success write-review-btn"><i class="fas fa-pen"></i> Написать отзыв</a>
+        </div>
+
+        <div class="reviews-controls">
+            <div class="filter-group">
+                <button class="filter-star active" data-rating="all"><i class="fas fa-star"></i> Все</button>
+                <button class="filter-star" data-rating="5"><i class="fas fa-star"></i> 5</button>
+                <button class="filter-star" data-rating="4"><i class="fas fa-star"></i> 4</button>
+                <button class="filter-star" data-rating="3"><i class="fas fa-star"></i> 3</button>
+                <button class="filter-star" data-rating="2"><i class="fas fa-star"></i> 2</button>
+                <button class="filter-star" data-rating="1"><i class="fas fa-star"></i> 1</button>
+            </div>
+            <div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="newest">Сначала новые</option>
+                    <option value="oldest">Сначала старые</option>
+                    <option value="highest">Сначала высокие оценки</option>
+                    <option value="lowest">Сначала низкие оценки</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="reviewsList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ФУТЕР (НЕТРОНУТ) ========== -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h4>О компании</h4><p>Профессиональный сервис для учета договоров ОСАГО. Работаем с 2010 года.</p></div>
+            <div class="footer-section"><h4>Навигация</h4><p><a href="about.html">О нас</a> | <a href="services.html">Услуги</a> | <a href="news.html">Новости</a></p><p><a href="faq.html">Вопросы</a> | <a href="contacts.html">Контакты</a></p></div>
+            <div class="footer-section"><h4>Контакты</h4><p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p><p><i class="fas fa-envelope"></i> info@osago-control.ru</p><p><i class="fas fa-map-marker-alt"></i> Москва, Красная площадь, 1</p></div>
+            <div class="footer-section"><h4>Мы в соцсетях</h4><div class="social-links"><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a><a href="https://t.me" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></div></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 ОСАГО-Контроль. Все права защищены.</p></div>
+    </div>
+</footer>
+
+<script>
+    // ========== ДЕМО-ДАННЫЕ ==========
+    const DEMO_USERS = [
+        { id: 1, username: 'Александр Иванов', email: 'alex@mail.ru', password: '123', role: 'user', created_at: '2024-01-01T10:00:00Z' },
+        { id: 2, username: 'Елена Смирнова', email: 'elena@mail.ru', password: '123', role: 'user', created_at: '2024-01-02T10:00:00Z' },
+        { id: 3, username: 'Дмитрий Петров', email: 'dmitry@mail.ru', password: '123', role: 'user', created_at: '2024-01-03T10:00:00Z' },
+        { id: 4, username: 'Мария Сидорова', email: 'maria@mail.ru', password: '123', role: 'user', created_at: '2024-01-04T10:00:00Z' },
+        { id: 5, username: 'Сергей Козлов', email: 'sergey@mail.ru', password: '123', role: 'user', created_at: '2024-01-05T10:00:00Z' }
+    ];
+
+    const DEMO_REVIEWS = [
+        { id: 1, user_id: 1, rating: 5, comment: 'Отличный сервис! Оформил полис за 5 минут. Всё понятно и удобно. Рекомендую!', created_at: '2024-03-15T10:30:00Z' },
+        { id: 2, user_id: 2, rating: 5, comment: 'Лучшая страховая компания! Быстрое урегулирование убытков. Спасибо команде ОСАГО-Контроль!', created_at: '2024-03-14T14:20:00Z' },
+        { id: 3, user_id: 3, rating: 5, comment: 'Очень доволен сервисом. Все вопросы решают оперативно. Оформлял ОСАГО и КАСКО.', created_at: '2024-03-12T09:15:00Z' },
+        { id: 4, user_id: 4, rating: 5, comment: 'Пользуюсь уже второй год. Всегда отличная поддержка и адекватные цены. Спасибо!', created_at: '2024-03-10T16:45:00Z' },
+        { id: 5, user_id: 5, rating: 5, comment: 'Профессиональный подход к каждому клиенту. Быстро оформили документы, всё объяснили.', created_at: '2024-03-08T11:00:00Z' }
+    ];
+
+    function initReviewData() {
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify(DEMO_USERS));
+        }
+        if (!localStorage.getItem('reviews')) {
+            localStorage.setItem('reviews', JSON.stringify(DEMO_REVIEWS));
+        }
+    }
+
+    function loadReviews() {
+        initReviewData();
+        
+        let reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+        let users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        let activeFilter = document.querySelector('.filter-star.active');
+        let ratingFilter = activeFilter ? activeFilter.getAttribute('data-rating') : 'all';
+        
+        let filtered = [...reviews];
+        if (ratingFilter !== 'all') {
+            filtered = filtered.filter(r => r.rating === parseInt(ratingFilter));
+        }
+        
+        let sortValue = document.getElementById('sortSelect').value;
+        if (sortValue === 'newest') {
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (sortValue === 'oldest') {
+            filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        } else if (sortValue === 'highest') {
+            filtered.sort((a, b) => b.rating - a.rating);
+        } else if (sortValue === 'lowest') {
+            filtered.sort((a, b) => a.rating - b.rating);
+        }
+        
+        let totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+        let avg = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+        document.getElementById('avgRating').innerText = avg;
+        
+        let fullStars = Math.floor(avg);
+        let emptyStars = 5 - fullStars;
+        document.getElementById('avgStars').innerHTML = '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
+        document.getElementById('totalReviews').innerText = reviews.length + ' отзывов';
+        
+        let ratingCounts = {1:0, 2:0, 3:0, 4:0, 5:0};
+        reviews.forEach(r => { ratingCounts[r.rating]++; });
+        
+        let distrHtml = '';
+        for (let i = 5; i >= 1; i--) {
+            let count = ratingCounts[i];
+            let percent = reviews.length > 0 ? (count / reviews.length * 100) : 0;
+            distrHtml += `<div class="distr-item"><div class="distr-stars">${i} <i class="fas fa-star"></i></div><div class="distr-bar"><div class="distr-fill" style="width: ${percent}%"></div></div><div class="distr-count">${count}</div></div>`;
+        }
+        document.getElementById('ratingDistribution').innerHTML = distrHtml;
+        
+        let userMap = {};
+        users.forEach(u => userMap[u.id] = u.username);
+        
+        if (filtered.length === 0) {
+            document.getElementById('reviewsList').innerHTML = `<div class="empty-reviews"><i class="fas fa-star-half-alt"></i><h3>Нет отзывов с такой оценкой</h3><p>Попробуйте выбрать другой фильтр</p></div>`;
+            return;
+        }
+        
+        let reviewsHtml = '';
+        filtered.forEach(r => {
+            let stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            let username = userMap[r.user_id] || 'Пользователь';
+            let date = new Date(r.created_at).toLocaleDateString('ru-RU');
+            reviewsHtml += `<div class="review-card"><div class="review-header"><div class="review-user"><i class="fas fa-user-circle"></i><div class="review-user-info"><h4>${escapeHtml(username)}</h4><div class="review-date">${date}</div></div></div><div class="review-rating">${stars}</div></div><div class="review-comment">${escapeHtml(r.comment)}</div></div>`;
+        });
+        document.getElementById('reviewsList').innerHTML = reviewsHtml;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function initEvents() {
+        document.querySelectorAll('.filter-star').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-star').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                loadReviews();
+            });
+        });
+        document.getElementById('sortSelect').addEventListener('change', () => loadReviews());
+    }
+    
+    function updateMenu() {
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch(e) {}
+        
+        document.querySelectorAll('.guest-only').forEach(el => {
+            if (el.classList.contains('auth-link')) {
+                el.style.display = user ? 'none' : 'inline-flex';
+            } else {
+                el.style.display = user ? 'none' : 'block';
+            }
+        });
+        document.querySelectorAll('.auth-only').forEach(el => el.style.display = user ? 'block' : 'none');
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = (user && user.role === 'admin') ? 'block' : 'none');
+        
+        let userNameSpan = document.getElementById('userName');
+        if (userNameSpan && user) userNameSpan.innerText = user.username;
+        
+        let guestRow = document.getElementById('guestAuthRow');
+        if (guestRow) {
+            guestRow.style.display = user ? 'none' : 'flex';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        initReviewData();
+        initEvents();
+        loadReviews();
+        updateMenu();
+    });
+</script>
+</body>
+</html>

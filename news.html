@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новости - ОСАГО-Контроль</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/app.js"></script>
+    <style>
+        /* ========== ОСНОВНЫЕ СТИЛИ ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff9f0; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 1300px; margin: 0 auto; padding: 20px; }
+        
+        /* ========== ШАПКА - ФИКСИРОВАННАЯ (как на странице "О компании") ========== */
+        header { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 10px rgba(255,152,0,0.3); 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000; 
+        }
+        
+        /* ОТСТУП ДЛЯ ФИКСИРОВАННОЙ ШАПКИ */
+        .main-container {
+            margin-top: 160px;
+        }
+        
+        .header-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .logo-row { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #f57c00; }
+        .logo-text { font-size: 24px; font-weight: bold; }
+        .logo-text span { color: #fff9c4; }
+        
+        /* Навигация */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px; }
+        nav ul { list-style: none; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; padding: 0; }
+        nav ul li { position: relative; }
+        nav ul li a { display: block; padding: 8px 15px; color: white; text-decoration: none; font-weight: 500; border-radius: 25px; transition: background 0.2s; }
+        nav ul li a:hover { background: rgba(255,255,255,0.2); }
+        nav ul li ul.dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; padding: 10px 0; }
+        nav ul li:hover ul.dropdown-menu { display: block; }
+        nav ul li ul.dropdown-menu li a { color: #333; padding: 10px 20px; white-space: nowrap; }
+        nav ul li ul.dropdown-menu li a:hover { background: #fff0e0; color: #f57c00; }
+        
+        /* Новая строка для кнопок входа/регистрации */
+        .auth-buttons-row {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 12px;
+            margin-top: 0;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-link {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* ========== СТИЛИ ДЛЯ КОНТЕНТА (нетронуты) ========== */
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #ff9800;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { background: #f57c00; }
+        .btn-success {
+            background: #4caf50;
+        }
+        .btn-success:hover {
+            background: #43a047;
+        }
+        
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+        .news-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+        .news-content {
+            padding: 20px;
+        }
+        .news-date {
+            color: #ff9800;
+            font-size: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .news-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .news-excerpt {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .read-more {
+            color: #ff9800;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .read-more:hover {
+            text-decoration: underline;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #fff3e0;
+            color: #ff9800;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .featured-news {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+        }
+        .featured-news-image {
+            flex: 1;
+            min-width: 250px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .featured-news-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .featured-news-content {
+            flex: 1;
+        }
+        .featured-news-content h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .news-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .sidebar-title {
+            border-bottom: 2px solid #ff9800;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .sidebar-news-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .sidebar-news-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .sidebar-news-item h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .subscribe-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .subscribe-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            background: white;
+            border: 2px solid #ff9800;
+            color: #ff9800;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #ff9800;
+            color: white;
+        }
+        
+        /* Футер */
+        footer { background: #2c3e50; color: #ecf0f1; padding: 3rem 0 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        .footer-section h4 { color: #ff9800; margin-bottom: 15px; }
+        .footer-section a { color: #ecf0f1; text-decoration: none; }
+        .social-links a { color: #ecf0f1; font-size: 24px; margin-right: 15px; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #34495e; }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 12px; }
+            .logo-row { flex-direction: column; gap: 10px; text-align: center; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            nav ul { justify-content: center; }
+            .auth-buttons-row { justify-content: center; }
+            .news-grid { grid-template-columns: 1fr; }
+            .featured-news { flex-direction: column; text-align: center; }
+            .featured-news-content h2 { font-size: 22px; }
+            .news-sidebar { margin-top: 15px; }
+            .filter-btn { padding: 6px 12px; font-size: 12px; }
+            .main-container {
+                margin-top: 280px;
+            }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ШАПКА (ПОЛНОСТЬЮ ИЗ ПРЕДОСТАВЛЕННОГО КОДА) ========== -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <!-- Верхняя часть: логотип -->
+            <div class="logo-row">
+                <div class="logo">
+                    <div class="logo-icon">О</div>
+                    <div class="logo-text">ОСАГО-<span>Контроль</span></div>
+                </div>
+                <div></div>
+            </div>
+            
+            <!-- Основное меню -->
+            <div class="nav-bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-info-circle"></i> О нас <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="about.html">О компании</a></li>
+                                <li><a href="team.html">Наша команда</a></li>
+                                <li><a href="vacancies.html">Вакансии</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-cogs"></i> Услуги <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="services.html">Все услуги</a></li>
+                                <li><a href="service-osago.html">ОСАГО</a></li>
+                                <li><a href="service-kasko.html">КАСКО</a></li>
+                                <li><a href="service-dms.html">ДМС</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-file-contract"></i> Договоры <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="contracts.html">Все договоры</a></li>
+                                <li><a href="add_contract.html">Оформить договор</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown auth-only" style="display:none">
+                            <a href="#"><i class="fas fa-exclamation-triangle"></i> Страховые случаи <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="cases.html">Все случаи</a></li>
+                                <li><a href="add_case.html">Заявить о случае</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-star"></i> Отзывы <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="reviews.html">Все отзывы</a></li>
+                                <li><a href="add_review.html">Оставить отзыв</a></li>
+                            </ul>
+                        </li>
+                        <li class="auth-only" style="display:none"><a href="analytics.html"><i class="fas fa-chart-line"></i> Аналитика</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-newspaper"></i> Новости <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="news.html">Все новости</a></li>
+                                <li><a href="promotions.html">Акции</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-question-circle"></i> Помощь <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="faq.html">Частые вопросы</a></li>
+                                <li><a href="contacts.html">Поддержка</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contacts.html"><i class="fas fa-map-marker-alt"></i> Контакты</a></li>
+                        <li class="admin-only" style="display:none"><a href="admin.html"><i class="fas fa-user-shield"></i> <span style="color:#ffcc80;">Админ-панель</span></a></li>
+                        <li class="dropdown auth-only" id="userMenuLi" style="display:none">
+                            <a href="#"><i class="fas fa-user-circle"></i> <span id="userName">Профиль</span> <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html">Панель управления</a></li>
+                                <li><a href="profile.html">Мой профиль</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="logout.html">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Новая строка: кнопки "Вход" и "Регистрация" -->
+            <div class="auth-buttons-row" id="guestAuthRow">
+                <a href="login.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                <a href="register.html" class="auth-link guest-only" style="display: inline-flex;"><i class="fas fa-user-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ========== ОСНОВНОЙ КОНТЕНТ (НЕТРОНУТ) ========== -->
+<div class="main-container">
+    <div style="width: 90%; max-width: 1300px; margin-left: auto; margin-right: auto; padding: 20px;">
+        <div class="card" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);text-align:center">
+            <h1><span style="color:#ff9800">Новости</span> компании</h1>
+            <p>Будьте в курсе последних событий и обновлений</p>
+        </div>
+
+        <!-- Главная новость -->
+        <div class="featured-news" id="featuredNews"></div>
+
+        <!-- Категории -->
+        <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+            <button class="filter-btn active" data-category="all">Все новости</button>
+            <button class="filter-btn" data-category="company">О компании</button>
+            <button class="filter-btn" data-category="legislation">Законодательство</button>
+            <button class="filter-btn" data-category="promotions">Акции</button>
+            <button class="filter-btn" data-category="tech">Технологии</button>
+        </div>
+
+        <!-- Сетка новостей -->
+        <div class="news-grid" id="newsGrid"></div>
+
+        <!-- Боковая панель с популярными новостями и подпиской -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <div class="news-sidebar">
+                <div class="sidebar-title"><i class="fas fa-fire"></i> Популярные новости</div>
+                <div id="popularNews"></div>
+            </div>
+            <div class="news-sidebar">
+                <div class="sidebar-title"><i class="fas fa-envelope"></i> Подписка на новости</div>
+                <p>Получайте свежие новости первыми!</p>
+                <div class="subscribe-form">
+                    <input type="email" id="subscribeEmail" placeholder="Ваш email">
+                    <button class="btn btn-success" onclick="subscribeNews()">Подписаться</button>
+                </div>
+                <div id="subscribeMsg" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ФУТЕР (НЕТРОНУТ) ========== -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section"><h4>О компании</h4><p>Профессиональный сервис для учета договоров ОСАГО. Работаем с 2010 года.</p></div>
+            <div class="footer-section"><h4>Навигация</h4><p><a href="about.html">О нас</a> | <a href="services.html">Услуги</a> | <a href="news.html">Новости</a></p><p><a href="faq.html">Вопросы</a> | <a href="contacts.html">Контакты</a></p></div>
+            <div class="footer-section"><h4>Контакты</h4><p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p><p><i class="fas fa-envelope"></i> info@osago-control.ru</p><p><i class="fas fa-map-marker-alt"></i> Москва, Красная площадь, 1</p></div>
+            <div class="footer-section"><h4>Мы в соцсетях</h4><div class="social-links"><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a><a href="https://t.me" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></div></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 ОСАГО-Контроль. Все права защищены.</p></div>
+    </div>
+</footer>
+
+<script>
+    // Данные новостей
+    var newsData = [
+        { id: 1, title: 'Новые тарифы ОСАГО с 1 апреля 2024 года', date: '2024-03-15', category: 'legislation', views: 1250, image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600', excerpt: 'ЦБ РФ утвердил новые тарифы на ОСАГО. Изменения затронут коэффициент бонус-малус и базовые ставки.', content: 'Полный текст новости...' },
+        { id: 2, title: 'Запуск мобильного приложения ОСАГО-Контроль', date: '2024-03-10', category: 'tech', views: 890, image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600', excerpt: 'Теперь вы можете управлять своими полисами прямо с телефона. Приложение доступно для iOS и Android.', content: 'Полный текст новости...' },
+        { id: 3, title: 'Скидка 20% на первый договор ОСАГО', date: '2024-03-05', category: 'promotions', views: 2100, image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600', excerpt: 'Только для новых клиентов! Оформите первый полис ОСАГО со скидкой 20% до конца марта.', content: 'Полный текст новости...' },
+        { id: 4, title: 'ОСАГО-Контроль признан лучшим сервисом 2023 года', date: '2024-02-20', category: 'company', views: 560, image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600', excerpt: 'Наша компания получила премию в номинации "Лучший онлайн-сервис по страхованию".', content: 'Полный текст новости...' },
+        { id: 5, title: 'Изменения в законе об ОСАГО: что нужно знать', date: '2024-02-10', category: 'legislation', views: 980, image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600', excerpt: 'С 1 марта вступают в силу поправки в закон об ОСАГО. Рассказываем о главных изменениях.', content: 'Полный текст новости...' },
+        { id: 6, title: 'Как оформить электронный полис ОСАГО', date: '2024-02-01', category: 'tech', views: 670, image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600', excerpt: 'Пошаговая инструкция по оформлению электронного полиса ОСАГО через наш сайт.', content: 'Полный текст новости...' }
+    ];
+
+    function initNewsData() {
+        if (!localStorage.getItem('news')) {
+            localStorage.setItem('news', JSON.stringify(newsData));
+        }
+    }
+
+    function loadNews(category = 'all') {
+        var news = JSON.parse(localStorage.getItem('news') || '[]');
+        var filteredNews = category === 'all' ? news : news.filter(n => n.category === category);
+        
+        // Сортировка по дате (новые сверху)
+        filteredNews.sort((a,b) => new Date(b.date) - new Date(a.date));
+        
+        // Главная новость (самая свежая)
+        if (filteredNews.length > 0) {
+            var featured = filteredNews[0];
+            document.getElementById('featuredNews').innerHTML = `
+                <div class="featured-news-image"><img src="${featured.image}" alt="${featured.title}"></div>
+                <div class="featured-news-content"><span class="category-badge"><i class="fas fa-tag"></i> ${getCategoryName(featured.category)}</span><h2>${featured.title}</h2><div class="news-date"><i class="fas fa-calendar"></i> ${featured.date}</div><p>${featured.excerpt}</p><a href="news-detail.html?id=${featured.id}" class="btn btn-success">Читать подробнее →</a></div>
+            `;
+            filteredNews = filteredNews.slice(1);
+        } else {
+            document.getElementById('featuredNews').innerHTML = '<div class="featured-news-content"><p>Нет новостей для отображения</p></div>';
+        }
+        
+        // Сетка новостей
+        var gridHtml = '';
+        for (var i = 0; i < filteredNews.length; i++) {
+            var n = filteredNews[i];
+            gridHtml += `
+                <div class="news-card"><div class="news-image"><img src="${n.image}" alt="${n.title}"></div><div class="news-content"><span class="category-badge"><i class="fas fa-tag"></i> ${getCategoryName(n.category)}</span><div class="news-date"><i class="fas fa-calendar"></i> ${n.date} <i class="fas fa-eye" style="margin-left:10px"></i> ${n.views}</div><h3 class="news-title">${n.title}</h3><p class="news-excerpt">${n.excerpt}</p><a href="news-detail.html?id=${n.id}" class="read-more">Подробнее →</a></div></div>
+            `;
+        }
+        document.getElementById('newsGrid').innerHTML = gridHtml || '<div class="text-center" style="grid-column:1/-1; padding:50px">Новостей не найдено</div>';
+        
+        // Популярные новости (по просмотрам)
+        var popular = [...news].sort((a,b) => b.views - a.views).slice(0,5);
+        var popularHtml = '';
+        for (var i = 0; i < popular.length; i++) {
+            var p = popular[i];
+            popularHtml += `
+                <div class="sidebar-news-item"><img src="${p.image}" alt="${p.title}"><div><h4>${p.title}</h4><div class="news-date"><i class="fas fa-calendar"></i> ${p.date}</div><a href="news-detail.html?id=${p.id}" class="read-more" style="font-size:12px">Читать →</a></div></div>
+            `;
+        }
+        document.getElementById('popularNews').innerHTML = popularHtml;
+    }
+    
+    function getCategoryName(category) {
+        var names = { company: 'О компании', legislation: 'Законодательство', promotions: 'Акции', tech: 'Технологии' };
+        return names[category] || category;
+    }
+    
+    function subscribeNews() {
+        var email = document.getElementById('subscribeEmail').value;
+        if (!email) { alert('Введите email'); return; }
+        document.getElementById('subscribeMsg').innerHTML = '<span style="color:green">Спасибо за подписку!</span>';
+        document.getElementById('subscribeEmail').value = '';
+        setTimeout(() => { document.getElementById('subscribeMsg').innerHTML = ''; }, 3000);
+    }
+    
+    function updateMenu() {
+        var user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch(e) {}
+        
+        document.querySelectorAll('.guest-only').forEach(function(el) {
+            if (el.classList.contains('auth-link')) {
+                el.style.display = user ? 'none' : 'inline-flex';
+            } else {
+                el.style.display = user ? 'none' : 'block';
+            }
+        });
+        document.querySelectorAll('.auth-only').forEach(function(el) {
+            el.style.display = user ? 'block' : 'none';
+        });
+        document.querySelectorAll('.admin-only').forEach(function(el) {
+            el.style.display = (user && user.role === 'admin') ? 'block' : 'none';
+        });
+        
+        var nameSpan = document.getElementById('userName');
+        if (nameSpan && user) nameSpan.innerText = user.username;
+        
+        var guestRow = document.getElementById('guestAuthRow');
+        if (guestRow) {
+            guestRow.style.display = user ? 'none' : 'flex';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initData === 'function') initData();
+        initNewsData();
+        if (typeof checkAuth === 'function') checkAuth();
+        updateMenu();
+        loadNews('all');
+        
+        var filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                loadNews(this.getAttribute('data-category'));
+            });
+        });
+    });
+</script>
+</body>
+</html>
