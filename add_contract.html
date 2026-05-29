@@ -398,43 +398,34 @@
         contracts.push(newContract);
         localStorage.setItem('contracts', JSON.stringify(contracts));
         
+        // Сохраняем ID созданного договора для печати
+        localStorage.setItem('lastCreatedContractId', newContract.id);
+        
         document.getElementById('successMsg').innerHTML = 'Договор успешно оформлен!';
         document.getElementById('successMsg').style.display = 'block';
         document.getElementById('printBtn').style.display = 'inline-block';
-        generatePrintPreview(newContract);
+        
+        // Очищаем форму
         document.getElementById('contractForm').reset();
+        
+        // Устанавливаем даты по умолчанию
+        var today = new Date();
+        var oneYearLater = new Date(today);
+        oneYearLater.setFullYear(today.getFullYear() + 1);
+        document.getElementById('start_date').value = today.toISOString().split('T')[0];
+        document.getElementById('end_date').value = oneYearLater.toISOString().split('T')[0];
         
         setTimeout(() => document.getElementById('successMsg').style.display = 'none', 5000);
     }
     
-    function generatePrintPreview(contract) {
-        document.getElementById('printPreview').innerHTML = `
-            <div style="text-align:center">
-                <h1 style="color:#ff9800">ОСАГО-Контроль</h1>
-                <hr style="border:1px solid #ff9800">
-                <h3>Страховой полис</h3>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px">
-                <div><strong>Номер договора:</strong><br>${contract.contract_number}</div>
-                <div><strong>Страхователь:</strong><br>${contract.client_name}</div>
-                <div><strong>Паспорт:</strong><br>${contract.client_passport}</div>
-                <div><strong>Телефон:</strong><br>${contract.client_phone}</div>
-                <div><strong>Автомобиль:</strong><br>${contract.car_brand} ${contract.car_model}</div>
-                <div><strong>Госномер:</strong><br>${contract.car_number}</div>
-                <div><strong>Срок действия:</strong><br>${contract.start_date} - ${contract.end_date}</div>
-                <div><strong>Страховая сумма:</strong><br>${contract.insurance_sum.toLocaleString()} ₽</div>
-                <div><strong>Страховая премия:</strong><br>${contract.premium.toLocaleString()} ₽</div>
-                <div><strong>Статус:</strong><br><span style="color:green;font-weight:bold">Активен</span></div>
-            </div>
-            <div style="text-align:center;margin-top:30px">
-                <hr>
-                <p style="font-size:12px;color:#999">Электронный полис имеет юридическую силу. Дата оформления: ${new Date(contract.created_at).toLocaleDateString()}</p>
-            </div>
-        `;
-    }
-    
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ПЕЧАТИ - открывает отдельную страницу
     function printContract() { 
-        window.print(); 
+        var contractId = localStorage.getItem('lastCreatedContractId');
+        if (contractId) {
+            window.open('print_contract.html?id=' + contractId, '_blank');
+        } else {
+            alert('Сначала оформите договор');
+        }
     }
     
     function updateMenu() {
