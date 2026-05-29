@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Электронный полис ОСАГО | Печать договора</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #e2e8f0; 
+            padding: 30px 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .policy-container { max-width: 1000px; width: 100%; margin: 0 auto; background: white; border-radius: 24px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25); }
+        .policy-card { padding: 2rem 2.2rem; background: white; border-radius: 24px; }
+        
+        .policy-header { text-align: center; border-bottom: 3px solid #f97316; padding-bottom: 1.2rem; margin-bottom: 1.8rem; }
+        .policy-header h1 { font-size: 28px; color: #1e293b; }
+        .policy-sub { color: #f97316; font-weight: 500; text-transform: uppercase; margin-top: 4px; }
+        .policy-number { font-size: 20px; font-weight: 800; background: #fef3c7; display: inline-block; padding: 5px 18px; border-radius: 40px; margin: 12px 0 6px; color: #b45309; font-family: monospace; }
+        .policy-date { font-size: 13px; color: #475569; margin-top: 8px; }
+        
+        .euro-protocol { background: #e6f7ec; border-left: 6px solid #059669; padding: 16px 20px; border-radius: 20px; margin: 25px 0 28px; text-align: center; }
+        .euro-protocol strong { font-size: 18px; color: #065f46; }
+        .euro-protocol p { color: #064e3b; font-size: 14px; margin-top: 6px; }
+        
+        .info-section { margin: 28px 0 24px; }
+        .section-title { font-size: 18px; font-weight: 700; color: #0f172a; border-left: 5px solid #f97316; padding-left: 14px; margin-bottom: 16px; }
+        .info-grid { background: #f8fafc; border-radius: 20px; padding: 12px 18px; border: 1px solid #e2e8f0; }
+        .info-row { display: flex; padding: 12px 0; border-bottom: 1px dashed #e2edf2; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { width: 180px; font-weight: 700; color: #334155; }
+        .info-value { flex: 1; color: #0f172a; font-weight: 500; }
+        
+        .highlight-value { font-weight: 800; color: #b45309; background: #fff0e0; padding: 2px 10px; border-radius: 24px; display: inline-block; }
+        
+        .signatures { display: flex; justify-content: space-between; margin: 48px 0 28px; padding-top: 16px; border-top: 2px dotted #cbd5e1; }
+        .sign-line { font-size: 14px; color: #1e293b; font-weight: 500; }
+        .sign-line span { font-weight: 400; color: #475569; }
+        
+        .policy-footer { margin-top: 20px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+        
+        .print-actions { text-align: center; margin-top: 28px; display: flex; gap: 18px; justify-content: center; }
+        .btn-print { background: #f97316; color: white; border: none; padding: 12px 32px; border-radius: 60px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-print:hover { background: #ea580c; }
+        .btn-secondary { background: #475569; }
+        .btn-secondary:hover { background: #334155; }
+        
+        .error-box { text-align: center; padding: 60px; background: #fff0f0; border-radius: 24px; color: #c2410c; }
+        .error-box i { font-size: 48px; margin-bottom: 20px; display: inline-block; }
+        
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .print-actions, .no-print { display: none !important; }
+            .policy-container { box-shadow: none; margin: 0 auto; max-width: 100%; }
+            .policy-card { padding: 0.5cm 0.7cm; }
+            .info-grid { background: white; border: 1px solid #ccc; }
+            .euro-protocol { background: #f1f9f0; }
+            .signatures { border-top: 2px solid #aaa; }
+            .info-section, .signatures, .euro-protocol { page-break-inside: avoid; }
+        }
+        
+        @media (max-width: 650px) {
+            .policy-card { padding: 1.2rem; }
+            .info-label { width: 130px; font-size: 13px; }
+            .info-value { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="policy-container">
+    <div class="policy-card" id="policyContent">
+        <div style="text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #f97316;"></i>
+            <h2>Загрузка договора...</h2>
+            <p>Пожалуйста, подождите</p>
+        </div>
+    </div>
+</div>
+
+<div class="print-actions no-print">
+    <button class="btn-print" onclick="window.print();">🖨️ Распечатать полис</button>
+    <button class="btn-print btn-secondary" onclick="window.close();">✖️ Закрыть окно</button>
+</div>
+
+<script>
+    (function() {
+        // Получаем ID из URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var contractId = urlParams.get('id');
+        
+        // Функция для отображения ошибки
+        function showError(message) {
+            document.getElementById('policyContent').innerHTML = 
+                '<div class="error-box">' +
+                '<i class="fas fa-exclamation-triangle"></i>' +
+                '<h2>Ошибка</h2>' +
+                '<p>' + message + '</p>' +
+                '<button class="btn-print" style="margin-top:20px;" onclick="window.close()">Закрыть окно</button>' +
+                '</div>';
+        }
+        
+        // Проверяем наличие ID
+        if (!contractId) {
+            showError('Не передан идентификатор договора.<br><br>Пример: print_contract.html?id=123');
+            return;
+        }
+        
+        // Пытаемся получить данные из localStorage
+        var contractsData = localStorage.getItem('contracts');
+        
+        if (!contractsData) {
+            showError('Нет сохраненных договоров. Сначала создайте договор в системе.');
+            return;
+        }
+        
+        var contracts = [];
+        try {
+            contracts = JSON.parse(contractsData);
+        } catch(e) {
+            showError('Ошибка чтения данных: ' + e.message);
+            return;
+        }
+        
+        // Ищем нужный договор
+        var contract = null;
+        var targetId = parseInt(contractId);
+        
+        for (var i = 0; i < contracts.length; i++) {
+            if (contracts[i].id === targetId || String(contracts[i].id) === contractId) {
+                contract = contracts[i];
+                break;
+            }
+        }
+        
+        if (!contract) {
+            showError('Договор с ID = ' + contractId + ' не найден.<br><br>Всего договоров в системе: ' + contracts.length);
+            return;
+        }
+        
+        // Форматирование даты
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString('ru-RU');
+        }
+        
+        // Форматирование денег
+        function formatMoney(amount) {
+            if (!amount && amount !== 0) return '0 ₽';
+            return Number(amount).toLocaleString('ru-RU') + ' ₽';
+        }
+        
+        // Экранирование HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Данные договора
+        var policyNumber = contract.contract_number || ('ОСАГО-' + contract.id);
+        var issueDate = formatDate(contract.created_at || new Date().toISOString());
+        var startDate = formatDate(contract.start_date);
+        var endDate = formatDate(contract.end_date);
+        
+        var clientName = contract.client_name || 'Не указано';
+        var clientPassport = contract.client_passport || '—';
+        var clientPhone = contract.client_phone || '—';
+        
+        var carBrand = contract.car_brand || '—';
+        var carModel = contract.car_model || '—';
+        var carNumber = contract.car_number || '—';
+        var carFull = (carBrand !== '—' ? carBrand : '') + (carModel !== '—' ? ' ' + carModel : '');
+        if (!carFull.trim()) carFull = '—';
+        
+        var insuranceSum = contract.insurance_sum || 500000;
+        var premium = contract.premium || 5000;
+        
+        var statusMap = { active: 'Активен', expired: 'Истек', terminated: 'Расторгнут' };
+        var status = statusMap[contract.status] || 'Активен';
+        
+        // Формируем HTML
+        var html = 
+            '<div class="policy-header">' +
+                '<h1>СТРАХОВОЙ ПОЛИС ОСАГО</h1>' +
+                '<div class="policy-sub">Обязательное страхование гражданской ответственности владельцев ТС</div>' +
+                '<div class="policy-number">' + escapeHtml(policyNumber) + '</div>' +
+                '<div class="policy-date">Дата выдачи полиса: ' + issueDate + '</div>' +
+            '</div>' +
+            
+            '<div class="euro-protocol">' +
+                '<strong>✅ Действует система «Европротокол»</strong>' +
+                '<p>При оформлении ДТП без участия сотрудников полиции, максимальная выплата до 100 000 ₽.<br>' +
+                'Полис действует на всей территории РФ. Электронная форма имеет полную юридическую силу.</p>' +
+            '</div>' +
+            
+            '<div class="info-section">' +
+                '<div class="section-title">📋 Страхователь</div>' +
+                '<div class="info-grid">' +
+                    '<div class="info-row"><div class="info-label">Полное имя:</div><div class="info-value">' + escapeHtml(clientName) + '</div></div>' +
+                    '<div class="info-row"><div class="info-label">Паспортные данные:</div><div class="info-value">' + escapeHtml(clientPassport) + '</div></div>' +
+                    '<div class="info-row"><div class="info-label">Контактный телефон:</div><div class="info-value">' + escapeHtml(clientPhone) + '</div></div>' +
+                '</div>' +
+            '</div>' +
+            
+            '<div class="info-section">' +
+                '<div class="section-title">🚗 Транспортное средство</div>' +
+                '<div class="info-grid">' +
+                    '<div class="info-row"><div class="info-label">Марка / Модель:</div><div class="info-value">' + escapeHtml(carFull) + '</div></div>' +
+                    '<div class="info-row"><div class="info-label">Государственный номер:</div><div class="info-value">' + escapeHtml(carNumber) + '</div></div>' +
+                '</div>' +
+            '</div>' +
+            
+            '<div class="info-section">' +
+                '<div class="section-title">⏱️ Срок страхования</div>' +
+                '<div class="info-grid">' +
+                    '<div class="info-row"><div class="info-label">Начало действия:</div><div class="info-value"><strong>' + startDate + '</strong></div></div>' +
+                    '<div class="info-row"><div class="info-label">Окончание действия:</div><div class="info-value"><strong>' + endDate + '</strong></div></div>' +
+                    '<div class="info-row"><div class="info-label">Статус полиса:</div><div class="info-value"><span class="highlight-value">' + status + '</span></div></div>' +
+                '</div>' +
+            '</div>' +
+            
+            '<div class="info-section">' +
+                '<div class="section-title">💰 Страховая сумма и премия</div>' +
+                '<div class="info-grid">' +
+                    '<div class="info-row"><div class="info-label">Страховая сумма (Гражданская ответственность):</div><div class="info-value"><span class="highlight-value">' + formatMoney(insuranceSum) + '</span></div></div>' +
+                    '<div class="info-row"><div class="info-label">Страховая премия (к оплате):</div><div class="info-value"><span class="highlight-value">' + formatMoney(premium) + '</span></div></div>' +
+                    '<div class="info-row"><div class="info-label">Валюта полиса:</div><div class="info-value">Российский рубль (₽)</div></div>' +
+                '</div>' +
+            '</div>' +
+            
+            '<div class="signatures">' +
+                '<div class="sign-line">____________________ <span>/ Страхователь</span></div>' +
+                '<div class="sign-line">____________________ <span>/ Представитель Страховщика</span></div>' +
+            '</div>' +
+            
+            '<div class="policy-footer">' +
+                '<div>Настоящий электронный полис ОСАГО сформирован в системе АИС РСА и имеет равную юридическую силу с бумажным бланком.</div>' +
+                '<div style="margin-top: 8px;">ОСАГО-Контроль • Лицензия ЦБ РФ № 1234-ОС • www.osago-control.ru</div>' +
+                '<div style="margin-top: 4px;">Дата формирования: ' + new Date().toLocaleString('ru-RU') + '</div>' +
+                '<div style="margin-top: 4px;">Уникальный номер договора: ' + escapeHtml(policyNumber) + '</div>' +
+            '</div>';
+        
+        document.getElementById('policyContent').innerHTML = html;
+    })();
+</script>
+</body>
+</html>
